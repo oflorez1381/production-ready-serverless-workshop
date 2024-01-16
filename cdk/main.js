@@ -14,8 +14,10 @@ if (!stageName) {
 }
 
 const dbStack = new DatabaseStack(app, `DatabaseStack-${stageName}`, { stageName })
+const cognitoStack = new CognitoStack(app, `CognitoStack-${stageName}`, { stageName })
 new ApiStack(app, `ApiStack-${stageName}`, {
     stageName,
     restaurantsTable: dbStack.restaurantsTable,
+    cognitoUserPool: cognitoStack.cognitoUserPool,
+    webUserPoolClient: cognitoStack.webUserPoolClient
 })
-new CognitoStack(app, `CognitoStack-${stageName}`, { stageName })
