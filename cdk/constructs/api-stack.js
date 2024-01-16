@@ -1,13 +1,8 @@
-const { Stack, Construct, StackProps } = require('aws-cdk-lib')
+const { Stack } = require('aws-cdk-lib')
 const { Runtime, Code, Function } = require('aws-cdk-lib/aws-lambda')
 const { RestApi, LambdaIntegration } = require('aws-cdk-lib/aws-apigateway')
 
 class ApiStack extends Stack {
-    /**
-     * @param {Construct} scope
-     * @param {string} id
-     * @param {StackProps} props
-     */
     constructor(scope, id, props) {
         super(scope, id, props)
 
@@ -17,7 +12,11 @@ class ApiStack extends Stack {
             code: Code.fromAsset('functions'),
         })
 
-        const api = new RestApi(this, 'MyApi')
+        const api = new RestApi(this, `${props.stageName}-MyApi`, {
+            deployOptions: {
+                stageName: props.stageName
+            }
+        })
 
         const lambdaIntegration = new LambdaIntegration(lambdaFunction)
         api.root.addMethod('GET', lambdaIntegration)

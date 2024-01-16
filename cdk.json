@@ -1,5 +1,5 @@
 {
-  "app": "node bin/production-ready-serverless-workshop.js",
+  "app": "node cdk/main.js",
   "watch": {
     "include": [
       "**"
