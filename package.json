@@ -10,7 +10,10 @@
     "test": "jest"
   },
   "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.490.0",
+    "@aws-sdk/lib-dynamodb": "^3.490.0",
     "aws-cdk": "2.120.0",
+    "dotenv": "^16.3.1",
     "jest": "^29.7.0"
   },
   "dependencies": {
