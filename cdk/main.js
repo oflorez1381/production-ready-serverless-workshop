@@ -3,6 +3,7 @@
 const cdk = require('aws-cdk-lib')
 const { ApiStack } = require('./constructs/api-stack')
 const { DatabaseStack } = require('./constructs/database-stack')
+const { CognitoStack } = require('./constructs/cognito-stack')
 
 const app = new cdk.App()
 let stageName = app.node.tryGetContext('stageName')
@@ -17,3 +18,4 @@ new ApiStack(app, `ApiStack-${stageName}`, {
     stageName,
     restaurantsTable: dbStack.restaurantsTable,
 })
+new CognitoStack(app, `CognitoStack-${stageName}`, { stageName })
