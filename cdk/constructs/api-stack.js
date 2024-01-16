@@ -6,9 +6,9 @@ class ApiStack extends Stack {
     constructor(scope, id, props) {
         super(scope, id, props)
 
-        const lambdaFunction = new Function(this, 'HandlerFunction', {
+        const lambdaFunction = new Function(this, 'GetIndex', {
             runtime: Runtime.NODEJS_18_X,
-            handler: 'handler.hello',
+            handler: 'get-index.handler',
             code: Code.fromAsset('functions'),
         })
 
