@@ -59,7 +59,7 @@ jobs:
   
     # delete the 'dev-ci' stage
       - name: destroy temp environment
-        run: cdk destroy --all --context stageName=dev-ci
+        run: cdk destroy --all --context stageName=dev-ci --force
   
     # deploy to the ACTUAL dev stage
       - name: deploy to dev
