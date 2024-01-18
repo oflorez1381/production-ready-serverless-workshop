@@ -42,7 +42,7 @@ jobs:
   
     # this generates the .env file for the 'dev-ci' stage
       - name: export env
-        run: ./export-env.sh ApiStack-dev-ci ca-central
+        run: ./export-env.sh ApiStack-dev-ci ca-central-1
   
     # apply seed data to dev-ci stage
       - name: add seed data
@@ -59,7 +59,7 @@ jobs:
   
     # delete the 'dev-ci' stage
       - name: destroy temp environment
-        run: cdk destroy --all --context stageName=dev-ci
+        run: cdk destroy --all --context stageName=dev-ci --require-approval never
   
     # deploy to the ACTUAL dev stage
       - name: deploy to dev
