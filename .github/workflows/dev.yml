@@ -19,12 +19,12 @@ jobs:
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: actions/setup-node@v3
         with:
           node-version: '18'
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: ca-central-1
           role-to-assume: ${{ secrets.AWS_ROLE }}
@@ -42,7 +42,7 @@ jobs:
   
     # this generates the .env file for the 'dev-ci' stage
       - name: export env
-        run: ./export-env.sh ApiStack-dev-ci us-east-1
+        run: ./export-env.sh ApiStack-dev-ci ca-central
   
     # apply seed data to dev-ci stage
       - name: add seed data
