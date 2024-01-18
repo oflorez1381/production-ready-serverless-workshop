@@ -26,24 +26,41 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-region: us-east-1
+          aws-region: ca-central-1
           role-to-assume: ${{ secrets.AWS_ROLE }}
           role-session-name: GithubActionsSession
 
       - name: npm ci
         run: npm ci
-
+  
       - name: install CDK
         run: npm install -g aws-cdk
-
-      - name: deploy to dev
-        run: cdk deploy --all --require-approval never
-
+  
+    # this provisions a temporary stage called 'dev-ci'
+      - name: deploy temp environment
+        run: cdk deploy --all --context stageName=dev-ci --require-approval never
+  
+    # this generates the .env file for the 'dev-ci' stage
       - name: export env
-        run: ./export-env.sh ApiStack-dev ca-central-1
-
+        run: ./export-env.sh ApiStack-dev-ci us-east-1
+  
+    # apply seed data to dev-ci stage
+      - name: add seed data
+        run: node seed-restaurants.js
+  
+    # this runs the integration test against the 'dev-ci' stage
+    # using the .env file that was captured earlier
       - name: run integration test
         run: npm run test
-
+  
+    # this runs the end-to-end test against the 'dev-ci' stage
       - name: run end-to-end tests
         run: npm run test:e2e
+  
+    # delete the 'dev-ci' stage
+      - name: destroy temp environment
+        run: cdk destroy --all --context stageName=dev-ci
+  
+    # deploy to the ACTUAL dev stage
+      - name: deploy to dev
+        run: cdk deploy --all --require-approval never
