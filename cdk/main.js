@@ -16,6 +16,7 @@ if (!stageName) {
 const dbStack = new DatabaseStack(app, `DatabaseStack-${stageName}`, { stageName })
 const cognitoStack = new CognitoStack(app, `CognitoStack-${stageName}`, { stageName })
 new ApiStack(app, `ApiStack-${stageName}`, {
+    serviceName: 'workshop-odfd',
     stageName,
     restaurantsTable: dbStack.restaurantsTable,
     cognitoUserPool: cognitoStack.cognitoUserPool,
