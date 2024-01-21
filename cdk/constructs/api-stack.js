@@ -1,8 +1,9 @@
 const { Stack, Fn, CfnOutput } = require('aws-cdk-lib')
-const { Runtime, Code, Function } = require('aws-cdk-lib/aws-lambda')
+const { Runtime } = require('aws-cdk-lib/aws-lambda')
 const { RestApi, LambdaIntegration, AuthorizationType, CfnAuthorizer } = require('aws-cdk-lib/aws-apigateway')
 const { NodejsFunction } = require('aws-cdk-lib/aws-lambda-nodejs')
 const { PolicyStatement, Effect } = require('aws-cdk-lib/aws-iam')
+const { StringParameter } = require('aws-cdk-lib/aws-ssm')
 
 class ApiStack extends Stack {
     constructor(scope, id, props) {
@@ -125,6 +126,11 @@ class ApiStack extends Stack {
 
         new CfnOutput(this, 'CognitoServerClientId', {
             value: props.serverUserPoolClient.userPoolClientId
+        })
+
+        new StringParameter(this, 'ApiUrlParameter', {
+            parameterName: `/${props.serviceName}/${props.stageName}/service-url`,
+            stringValue: api.url
         })
     }
 }
