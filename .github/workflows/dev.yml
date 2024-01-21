@@ -64,3 +64,8 @@ jobs:
     # deploy to the ACTUAL dev stage
       - name: deploy to dev
         run: cdk deploy --all --require-approval never
+
+      - name: destroy temp environment if any step fails
+        if: failure()
+        run: cdk destroy --all --context stageName=dev-ci --force
+        
