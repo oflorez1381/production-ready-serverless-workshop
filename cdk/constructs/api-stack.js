@@ -1,4 +1,4 @@
-const { Stack, Fn, CfnOutput } = require('aws-cdk-lib')
+const { Stack, Fn, CfnOutput, CfnParameter } = require('aws-cdk-lib')
 const { Runtime } = require('aws-cdk-lib/aws-lambda')
 const { RestApi, LambdaIntegration, AuthorizationType, CfnAuthorizer } = require('aws-cdk-lib/aws-apigateway')
 const { NodejsFunction } = require('aws-cdk-lib/aws-lambda-nodejs')
@@ -8,6 +8,11 @@ const { StringParameter } = require('aws-cdk-lib/aws-ssm')
 class ApiStack extends Stack {
     constructor(scope, id, props) {
         super(scope, id, props)
+
+        new CfnParameter(this, "KmsArnParameter", {
+            type: "AWS::SSM::Parameter::Value<String>",
+            default: `/${props.serviceName}/${props.ssmStageName}/kmsArn`
+        })
 
         const api = new RestApi(this, `${props.stageName}-MyApi`, {
             deployOptions: {
@@ -81,7 +86,17 @@ class ApiStack extends Stack {
                 effect: Effect.ALLOW,
                 actions: ['ssm:GetParameters*'],
                 resources: [
-                    Fn.sub(`arn:aws:ssm:\${AWS::Region}:\${AWS::AccountId}:parameter/${props.serviceName}/${props.ssmStageName}/search-restaurants/config`)
+                    Fn.sub(`arn:aws:ssm:\${AWS::Region}:\${AWS::AccountId}:parameter/${props.serviceName}/${props.ssmStageName}/search-restaurants/config`),
+                    Fn.sub(`arn:aws:ssm:\${AWS::Region}:\${AWS::AccountId}:parameter/${props.serviceName}/${props.ssmStageName}/search-restaurants/secretString`)
+                ]
+            })
+        )
+        searchRestaurantsFunction.role.addToPrincipalPolicy(
+            new PolicyStatement({
+                effect: Effect.ALLOW,
+                actions: ['kms:Decrypt'],
+                resources: [
+                    Fn.ref('KmsArnParameter')
                 ]
             })
         )
