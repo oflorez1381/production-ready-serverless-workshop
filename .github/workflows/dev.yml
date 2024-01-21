@@ -38,7 +38,7 @@ jobs:
   
     # this provisions a temporary stage called 'dev-ci'
       - name: deploy temp environment
-        run: cdk deploy --all --context stageName=dev-ci --require-approval never
+        run: cdk deploy --all --context stageName=dev-ci --context ssmStageName=dev --require-approval never
   
     # this generates the .env file for the 'dev-ci' stage
       - name: export env
