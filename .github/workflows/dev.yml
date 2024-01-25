@@ -42,7 +42,9 @@ jobs:
   
     # this generates the .env file for the 'dev-ci' stage
       - name: export env
-        run: ./export-env.sh ApiStack-dev-ci ca-central-1
+        run: |
+          ./export-env.sh ApiStack-dev-ci ca-central-1
+          ./export-env.sh EventsStack-dev-ci ca-central-1 .env.events
   
     # apply seed data to dev-ci stage
       - name: add seed data
