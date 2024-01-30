@@ -1,5 +1,7 @@
-const { Logger } = require('@aws-lambda-powertools/logger')
+const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger')
 const logger = new Logger({ serviceName: process.env.serviceName })
+
+const middy = require('@middy/core')
 const fs = require("fs")
 const Mustache = require('mustache')
 const http = require('axios')
@@ -32,7 +34,8 @@ const getRestaurants = async () => {
     return (await httpReq).data
 }
 
-module.exports.handler = async (event, context) => {
+module.exports.handler = middy(async (event, context) => {
+    logger.refreshSampleRateCalculation()
     const restaurants = await getRestaurants()
     logger.debug('got restaurants', { count: restaurants.length })
     const dayOfWeek = days[new Date().getDay()]
@@ -55,4 +58,4 @@ module.exports.handler = async (event, context) => {
     }
 
     return response
-}
+}).use(injectLambdaContext(logger))

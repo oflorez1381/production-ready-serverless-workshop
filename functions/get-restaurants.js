@@ -1,4 +1,4 @@
-const { Logger } = require('@aws-lambda-powertools/logger')
+const { Logger, injectLambdaContext } = require('@aws-lambda-powertools/logger')
 const logger = new Logger({ serviceName: process.env.serviceName })
 const middy = require('@middy/core')
 const ssm = require('@middy/ssm')
@@ -30,6 +30,7 @@ const getRestaurants = async (count) => {
 }
 
 module.exports.handler = middy(async (event, context) => {
+    logger.refreshSampleRateCalculation()
     const restaurants = await getRestaurants(context.config.defaultResults)
     const response = {
         statusCode: 200,
@@ -44,4 +45,4 @@ module.exports.handler = middy(async (event, context) => {
     fetchData: {
         config: `/${service_name}/${ssm_stage_name}/get-restaurants/config`
     }
-}))
+})).use(injectLambdaContext(logger))
