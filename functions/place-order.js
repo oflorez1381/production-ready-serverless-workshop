@@ -4,8 +4,10 @@ const { EventBridgeClient, PutEventsCommand } = require('@aws-sdk/client-eventbr
 const middy = require('@middy/core')
 const eventBridge = new EventBridgeClient()
 const chance = require('chance').Chance()
-
 const busName = process.env.bus_name
+const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer')
+const tracer = new Tracer({ serviceName: process.env.serviceName })
+tracer.captureAWSv3Client(eventBridge)
 
 module.exports.handler = middy(async (event) => {
     logger.refreshSampleRateCalculation()
@@ -39,3 +41,4 @@ module.exports.handler = middy(async (event) => {
 
     return response
 }).use(injectLambdaContext(logger))
+    .use(captureLambdaHandler(tracer))

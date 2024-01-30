@@ -7,6 +7,10 @@ const sns = new SNSClient()
 const { makeIdempotent } = require('@aws-lambda-powertools/idempotency')
 const { DynamoDBPersistenceLayer } = require('@aws-lambda-powertools/idempotency/dynamodb')
 const middy = require('@middy/core')
+const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer')
+const tracer = new Tracer({ serviceName: process.env.serviceName })
+tracer.captureAWSv3Client(eventBridge)
+tracer.captureAWSv3Client(sns)
 
 const busName = process.env.bus_name
 const topicArn = process.env.restaurant_notification_topic
@@ -41,5 +45,6 @@ const handler = middy(async (event) => {
 
     return orderId
 }).use(injectLambdaContext(logger))
+    .use(captureLambdaHandler(tracer))
 
 module.exports.handler = makeIdempotent(handler, { persistenceStore })

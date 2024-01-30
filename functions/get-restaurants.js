@@ -6,6 +6,9 @@ const { DynamoDB } = require("@aws-sdk/client-dynamodb")
 const { DynamoDBDocumentClient, ScanCommand } = require("@aws-sdk/lib-dynamodb")
 const dynamodbClient = new DynamoDB()
 const dynamodb = DynamoDBDocumentClient.from(dynamodbClient)
+const { Tracer, captureLambdaHandler } = require('@aws-lambda-powertools/tracer')
+const tracer = new Tracer({ serviceName: process.env.serviceName })
+tracer.captureAWSv3Client(dynamodb)
 
 const { service_name, ssm_stage_name } = process.env
 const tableName = process.env.restaurants_table
@@ -46,3 +49,4 @@ module.exports.handler = middy(async (event, context) => {
         config: `/${service_name}/${ssm_stage_name}/get-restaurants/config`
     }
 })).use(injectLambdaContext(logger))
+    .use(captureLambdaHandler(tracer))
